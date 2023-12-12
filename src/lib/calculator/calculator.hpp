@@ -1,20 +1,37 @@
 #ifndef CALCULATOR_HPP
 #define CALCULATOR_HPP
 
-class Calculator
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+
+namespace Calculator
 {
-public:
-    template <class... Args>
-    auto Add(Args... args) -> decltype((args + ...));
+    class Calculator
+    {
+    public:
+        template <class... Args>
+        auto Add(Args... args) noexcept -> boost::multiprecision::cpp_dec_float_50
+        {
+            return (... + args);
+        }
 
-    template <class... Args>
-    auto Subtract(Args... args) -> decltype((args - ...));
+        template <class... Args>
+        auto Subtract(Args... args) noexcept -> boost::multiprecision::cpp_dec_float_50
+        {
+            return (... - args);
+        }
 
-    template <class... Args>
-    auto Multiply(Args... args) -> decltype((args * ...));
+        template <class... Args>
+        auto Multiply(Args... args) noexcept -> boost::multiprecision::cpp_dec_float_50
+        {
+            return (... * args);
+        }
 
-    template <class... Args>
-    auto Divide(Args... args) -> decltype((args / ...));
-};
-
+        template <class... Args>
+        auto Divide(Args... args) noexcept -> boost::multiprecision::cpp_dec_float_50
+        {
+            return (... / args);
+        }
+    };
+}
 #endif

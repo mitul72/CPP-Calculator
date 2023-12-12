@@ -1,28 +1,3 @@
 #include "calculator.hpp"
-// #include <cppkafka/cppkafka.h>
-
-#include "Calculator.hpp"
-
-template <class... Args>
-auto Calculator::Add(Args... args) -> decltype((args + ...))
-{
-    return (args + ...);
-}
-
-template <class... Args>
-auto Calculator::Subtract(Args... args) -> decltype((args - ...))
-{
-    return (args - ...);
-}
-
-template <class... Args>
-auto Calculator::Multiply(Args... args) -> decltype((args * ...))
-{
-    return (args * ...);
-}
-
-template <class... Args>
-auto Calculator::Divide(Args... args) -> decltype((args / ...))
-{
-    return (args / ...);
-}
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
