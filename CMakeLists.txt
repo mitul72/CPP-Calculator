@@ -19,25 +19,12 @@ file(GLOB_RECURSE LIB_SOURCES
      "src/lib/calculator/*.cpp"
 )
 
-file(GLOB GMP_SOURCES
-  "_"
-)
-
 add_library(lib ${LIB_SOURCES})
 
 
-set(GTEST_GIT_TAG v1.13.0)
-
 include(FetchContent)
 
-# Fetch GMP
-FetchContent_Declare(
-    GMP
-    GIT_REPOSITORY https://github.com/alisw/GMP.git
-    GIT_TAG        master
-)
-
-
+set(GTEST_GIT_TAG v1.13.0)
 
 FetchContent_Declare(
         googletest
@@ -56,7 +43,7 @@ FetchContent_Declare(
 )
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(CppKafka googletest gmp)
+FetchContent_MakeAvailable(CppKafka googletest)
 
 add_executable(tests ${TEST_SOURCES})
 
@@ -67,21 +54,23 @@ target_link_libraries(tests
 )
 
 target_link_libraries(lib
-${Boost_LIBRARIES})
+  ${Boost_LIBRARIES}
+)
 
 target_include_directories(tests PUBLIC src/lib/calculator)
 # Add executable target with source files listed in SOURCE_FILES variable
 add_executable(kafkacpp ${SOURCE_FILES})
 
 target_include_directories(kafkacpp PUBLIC src/lib/calculator ${Boost_INCLUDE_DIRS})  # Include CppKafka source directory
+
 target_include_directories(tests PUBLIC src/lib/calculator ${Boost_INCLUDE_DIRS})  # Include CppKafka source directory
 
 
 target_link_libraries(kafkacpp
-${Boost_LIBRARIES})
+  ${Boost_LIBRARIES}
+)
 
 # target_link_libraries(kafkacpp
 #         ${CPPKAFKA_LIBRARY}
 #         Boost::program_options
-#         ${KAFKA_EXEC_LIBS}
 # )

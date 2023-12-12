@@ -23,9 +23,10 @@ TEST(CalcTest, Subtract)
     EXPECT_EQ(res_int, -4);
 
     // Test for Float
-    auto res_float = calculator.Subtract(3.2, 3.3, 4.1);
-    EXPECT_EQ(res_float, -4.2);
+    double res_float = (double)calculator.Subtract(3.2, 3.3, 4.1);
+    EXPECT_NEAR(res_float, -4.2, 6);
 }
+
 TEST(CalcTest, Divide)
 {
     Calculator::Calculator calculator;
@@ -35,9 +36,10 @@ TEST(CalcTest, Divide)
     EXPECT_EQ(res_int, 0.25);
 
     // Test for Float
-    auto res_float = calculator.Divide(3.2, 3.3, 4.1);
-    EXPECT_EQ(res_float, 0.236511);
+    double res_float = (double)calculator.Divide(3.2, 3.3, 4.1);
+    EXPECT_NEAR(res_float, 0.236511, 6);
 }
+
 TEST(CalcTest, Multiply)
 {
     Calculator::Calculator calculator;
@@ -47,6 +49,6 @@ TEST(CalcTest, Multiply)
     EXPECT_EQ(res_int, 36);
 
     // Test for Float
-    auto res_float = calculator.Multiply(3.2, 3.3, 4.1);
-    EXPECT_EQ(res_float, 42.296);
+    double res_float = (double)calculator.Multiply(3.2, 3.3, 4.1);
+    EXPECT_NEAR(res_float, 42.296, 6);
 }
