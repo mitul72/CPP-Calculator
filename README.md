@@ -28,6 +28,14 @@ The application leverages multi-threading to perform time-consuming factorial ca
 
 Kafka streaming functionality is integrated into the application. It consumes messages from a Kafka topic, processes them using the Calculator class, displays the results, and writes them to an output file. The Kafka connection settings are configurable to ensure the application gracefully handles Kafka connection and message consumption.
 
+## Editing Kafka Configuration
+
+Edit the config.json file to configure Kafka settings. Adjust the following parameters:
+
+- "broker": Kafka broker address (e.g., "localhost:9092").
+- "group": Kafka consumer group ID.
+- "topic": Kafka topic name.
+
 ## Building and Running the Application
 
 ### Prerequisites
