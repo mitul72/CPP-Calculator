@@ -1,11 +1,13 @@
 #include <cppkafka/cppkafka.h>
 #include <iostream>
+#include "config_json.hpp"
 int main()
 {
-    cppkafka::Consumer consumer({{"metadata.broker.list", "127.0.0.1:9092"},
-                                 {"group.id", "test_group"}});
+    auto configJson = ConfigKF::GetConfigJson("config.json");
+    cppkafka::Consumer consumer({{"metadata.broker.list", configJson["kafka"]["broker"].get<std::string>()},
+                                 {"group.id", configJson["kafka"]["group"].get<std::string>()}});
 
-    consumer.subscribe({"my_topic"});
+    consumer.subscribe({configJson["kafka"]["topic"].get<std::string>()});
 
     while (true)
     {

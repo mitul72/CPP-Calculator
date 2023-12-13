@@ -1,48 +1,55 @@
 #include <cppkafka/cppkafka.h>
-#include "cxxopts.hpp"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include "config_json.hpp"
 
 using namespace cppkafka;
+using json = nlohmann::json;
 
 int main(int argc, char *argv[])
 {
-    cxxopts::Options options("Kafka Calculator", "A simple calculator which uses consumer and producer to calculate");
+    double operand1 = 0;
+    double operand2 = 0;
+    double _operator = 0;
 
-    options.add_options()("h,help", "Print help")("num1", "Operand 1", cxxopts::value<double>())("num2", "Operand 2", cxxopts::value<double>()->default_value("output.txt"))("count", "Number of iterations", cxxopts::value<int>()->default_value("1"));
+    std::cout << "Enter Operand1: ";
+    std::cin >> operand1;
 
-    auto result = options.parse(argc, argv);
+    std::cout << "Enter Operator (0 for add, 1 for subtract, 2 for multiply, 3 for divide, 4 for factorial): ";
+    std::cin >> _operator;
 
-    if (result.count("help"))
+    if (_operator != 4)
     {
-        std::cout << options.help() << std::endl;
-        return 0;
+        std::cout << "Enter Operand2: ";
+        std::cin >> _operator;
     }
-
-    if (!result.count("num1") || !result.count("num2"))
-    {
-        std::cerr << "Error: Both num1 and num2 must be provided." << std::endl;
-        return 1;
-    }
-    double operand1 = result["num1"].as<double>();
-    double operand2 = result["num2"].as<double>();
-
     try
     {
-        // Create the config
+        auto configJson = ConfigKF::GetConfigJson("config.json");
         Configuration config = {
-            {"metadata.broker.list", "127.0.0.1:9092"}};
+            {"metadata.broker.list", configJson["kafka"]["broker"].get<std::string>()}};
 
         // Create the producer
         Producer producer(config);
 
-        // Produce a message!
-        std::string message = "hey there!";
-        producer.produce(MessageBuilder("my_topic").partition(0).payload(message));
+        // Produce a message for operand1
+        std::string message1 = "Operand 1: " + std::to_string(operand1);
+        producer.produce(MessageBuilder(configJson["kafka"]["topic"].get<std::string>()).partition(0).payload(message1));
+
+        // Produce a message for the operator
+        std::string message2 = "Operator: " + std::to_string(_operator);
+        producer.produce(MessageBuilder(configJson["kafka"]["topic"].get<std::string>()).partition(0).payload(message2));
+
+        if (_operator != 4)
+        {
+            // Produce a message for operand2
+            std::string message3 = "Operand 2: " + std::to_string(operand2);
+            producer.produce(MessageBuilder(configJson["kafka"]["topic"].get<std::string>()).partition(0).payload(message3));
+        }
+
         producer.flush();
-    }
-    catch (const cxxopts::OptionException &e)
-    {
-        std::cerr << "Error parsing command-line options: " << e.what() << std::endl;
-        return 1;
     }
     catch (const std::exception &e)
     {

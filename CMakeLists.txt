@@ -11,6 +11,9 @@ set(SOURCE_FILES src/main.cpp)
 set(CPPKAFKA_BUILD_SHARED 0)
 find_package(Boost COMPONENTS unit_test_framework program_options REQUIRED)
 
+# Copy config.json to the build folder
+configure_file(${CMAKE_SOURCE_DIR}/config.json ${CMAKE_BINARY_DIR}/config.json COPYONLY)
+
 file(GLOB TEST_SOURCES
      "tests/*.cpp"
 )
@@ -19,6 +22,10 @@ file(GLOB KAFKA_SOURCES
   "src/lib/kafka/*.cpp"
 )
 
+file(GLOB KAFKA_LIB
+  "src/lib/kafka/config_json/config_json.cpp"
+)
+add_library(kafkalib ${KAFKA_LIB})
 file(GLOB_RECURSE LIB_SOURCES
      "src/lib/calculator/*.cpp"
 )
@@ -27,6 +34,16 @@ add_library(lib ${LIB_SOURCES})
 
 
 include(FetchContent)
+
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.10.4  # Specify the version tag you want to use
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
+target_link_libraries(kafkalib PRIVATE nlohmann_json::nlohmann_json)
 
 set(GTEST_GIT_TAG v1.13.0)
 
@@ -68,16 +85,18 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(CppKafka googletest librdkafka)
 # add_subdirectory(${cppkafka_SOURCE_DIR})
 add_executable(tests ${TEST_SOURCES})
+target_link_libraries(lib
+  ${Boost_LIBRARIES}
+)
+target_include_directories(lib PRIVATE ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(tests
         GTest::gtest_main
         ${Boost_LIBRARIES}
         Boost::unit_test_framework
+        lib
 )
 
-target_link_libraries(lib
-  ${Boost_LIBRARIES}
-)
 
 target_include_directories(tests PUBLIC src/lib/calculator)
 # Add executable target with source files listed in SOURCE_FILES variable
@@ -93,14 +112,27 @@ target_link_libraries(kafkacpp
 )
 
 add_executable(producer-kafka src/lib/kafka/producer.cpp)
+target_include_directories(producer-kafka PRIVATE 
+  ${nlohmann_json_SOURCE_DIR}/single_include   
+  src/lib/kafka/config_json
+)
+
 
 target_link_libraries(producer-kafka
     cppkafka
     rdkafka
+    nlohmann_json::nlohmann_json
+    kafkalib
 )
 add_executable(consumer-kafka src/lib/kafka/consumer.cpp)
+target_include_directories(consumer-kafka PRIVATE 
+  ${nlohmann_json_SOURCE_DIR}/single_include
+  src/lib/kafka/config_json
+)
 
 target_link_libraries(consumer-kafka
     cppkafka
     rdkafka
+    nlohmann_json::nlohmann_json
+    kafkalib
 )
