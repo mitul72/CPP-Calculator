@@ -1,0 +1,10 @@
+{"operand1":100.0,"operand2":20.0,"operator":0}
+The result is: 120
+{"operand1":5.0,"operand2":-1.0,"operator":4}
+The result is: 120
+{"operand1":4.0,"operand2":4.0,"operator":2}
+The result is: 16
+{"operand1":100.0,"operand2":20.0,"operator":0}
+The result is: 120
+{"operand1":90.0,"operand2":3.0,"operator":3}
+The result is: 30
