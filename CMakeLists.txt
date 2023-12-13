@@ -112,6 +112,7 @@ target_link_libraries(kafkacpp
 )
 
 add_executable(producer-kafka src/lib/kafka/producer.cpp)
+
 target_include_directories(producer-kafka PRIVATE 
   ${nlohmann_json_SOURCE_DIR}/single_include   
   src/lib/kafka/config_json
@@ -125,6 +126,7 @@ target_link_libraries(producer-kafka
     kafkalib
 )
 add_executable(consumer-kafka src/lib/kafka/consumer.cpp)
+
 target_include_directories(consumer-kafka PRIVATE 
   ${nlohmann_json_SOURCE_DIR}/single_include
   src/lib/kafka/config_json
