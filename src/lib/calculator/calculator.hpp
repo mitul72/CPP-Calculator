@@ -43,7 +43,7 @@ namespace Calculator
         }
 
     public:
-        int num_threads = 2;
+        int num_threads = 4;
 
         template <class... Args>
         auto Add(Args... args) noexcept -> boost::multiprecision::cpp_dec_float_50

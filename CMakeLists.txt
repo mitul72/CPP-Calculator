@@ -15,6 +15,10 @@ file(GLOB TEST_SOURCES
      "tests/*.cpp"
 )
 
+file(GLOB KAFKA_SOURCES
+  "src/lib/kafka/*.cpp"
+)
+
 file(GLOB_RECURSE LIB_SOURCES
      "src/lib/calculator/*.cpp"
 )
@@ -26,11 +30,29 @@ include(FetchContent)
 
 set(GTEST_GIT_TAG v1.13.0)
 
+# cxxopts for argparse
+FetchContent_Declare(
+    cxxopts
+    GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+    GIT_TAG v2.2.1
+)
+
+FetchContent_MakeAvailable(cxxopts)
+
 FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG ${GTEST_GIT_TAG}
 )
+
+set(RDKAFKA_BUILD_EXAMPLES OFF ON CACHE INTERNAL "Turn off examples")
+set(RDKAFKA_BUILD_TESTS OFF CACHE INTERNAL "Turn off tests")
+FetchContent_Declare(
+    librdkafka
+    GIT_REPOSITORY https://github.com/confluentinc/librdkafka
+    GIT_TAG        v2.3.0
+)
+
 
 set(CPPKAFKA_DISABLE_EXAMPLES ON CACHE INTERNAL "Turn off examples")
 set(CPPKAFKA_DISABLE_TESTS ON CACHE INTERNAL "Turn off tests")
@@ -39,12 +61,12 @@ set(CPPKAFKA_DISABLE_TESTS ON CACHE INTERNAL "Turn off tests")
 FetchContent_Declare(
   CppKafka
   GIT_REPOSITORY https://github.com/mfontanini/cppkafka.git
-  GIT_TAG        master
+  GIT_TAG        v0.3.1
 )
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(CppKafka googletest)
-
+FetchContent_MakeAvailable(CppKafka googletest librdkafka)
+# add_subdirectory(${cppkafka_SOURCE_DIR})
 add_executable(tests ${TEST_SOURCES})
 
 target_link_libraries(tests
@@ -70,7 +92,15 @@ target_link_libraries(kafkacpp
   ${Boost_LIBRARIES}
 )
 
-# target_link_libraries(kafkacpp
-#         ${CPPKAFKA_LIBRARY}
-#         Boost::program_options
-# )
+add_executable(producer-kafka src/lib/kafka/producer.cpp)
+
+target_link_libraries(producer-kafka
+    cppkafka
+    rdkafka
+)
+add_executable(consumer-kafka src/lib/kafka/consumer.cpp)
+
+target_link_libraries(consumer-kafka
+    cppkafka
+    rdkafka
+)

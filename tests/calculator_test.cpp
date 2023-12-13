@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "calculator.hpp"
+#include <boost/multiprecision/cpp_int.hpp>
 
 TEST(CalcTest, Add)
 {
@@ -51,4 +52,12 @@ TEST(CalcTest, Multiply)
     // Test for Float
     double res_float = (double)calculator.Multiply(3.2, 3.3, 4.1);
     EXPECT_NEAR(res_float, 42.296, 6);
+}
+
+TEST(CalcTest, Factorial)
+{
+    Calculator::Calculator calculator;
+
+    auto res = calculator.Factorial(5);
+    EXPECT_EQ(res, 120);
 }
